@@ -102,6 +102,50 @@
 
   .section-label:first-child { margin-top: 0; }
 
+  .search-wrap {
+    position: relative;
+    margin-bottom: 28px;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    opacity: 0.5;
+    font-style: normal;
+    pointer-events: none;
+  }
+
+  #pet-search {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+    padding: 11px 14px 11px 38px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  #pet-search::placeholder { color: var(--muted); }
+  #pet-search:focus { border-color: #4a9eff; }
+
+  .no-results {
+    display: none;
+    color: var(--muted);
+    font-size: 13px;
+    text-align: center;
+    padding: 24px 0;
+  }
+
+  tr.row-hidden { display: none; }
+  [data-section].section-hidden { display: none; }
+  [data-section-table].section-hidden { display: none; }
+
   table {
     width: 100%;
     border-collapse: collapse;
@@ -270,16 +314,19 @@
     color: #4a9eff;
   }
 
-  .lc-name  { width: 34%; }
-  .lc-base  { width: 26%; }
-  .lc-eff   { width: 22%; }
-  .lc-prob  { width: 18%; }
+  .lc-name  { width: 26%; }
+  .lc-base  { width: 20%; }
+  .lc-eff   { width: 18%; }
+  .lc-prob  { width: 14%; }
+  .lc-cost  { width: 22%; }
 
-  .val-gold   { color: #ffd700; }
-  .val-lime   { color: #7fff00; }
-  .val-orange { color: #ff8c00; }
-  .val-red    { color: #ff6060; }
-  .val-muted  { color: var(--muted); }
+  .val-gold    { color: #ffd700; }
+  .val-lime    { color: #7fff00; }
+  .val-orange  { color: #ff8c00; }
+  .val-red     { color: #ff6060; }
+  .val-muted   { color: var(--muted); }
+  .val-shell   { color: #4fc3f7; }
+  .val-diamond { color: #b8e8ff; }
 
   .badge {
     font-size: 10px;
@@ -309,9 +356,11 @@
     .calc-top .hint { margin-left: 0; width: 100%; order: 3; }
     .egg-tabs { gap: 5px; }
     .egg-tabs button { padding: 6px 10px; font-size: 10px; }
-    .lc-name  { width: 40%; }
-    .lc-base  { width: 30%; }
-    .lc-eff   { width: 30%; }
+    .lc-name  { width: 30%; }
+    .lc-base  { width: 24%; }
+    .lc-eff   { width: 22%; }
+    .lc-prob  { display: none; }
+    .lc-cost  { width: 24%; }
   }
 
   @media (max-width: 480px) {
@@ -327,10 +376,10 @@
     .col-src   { width: 36%; }
     .calc-top input { font-size: 18px; width: 100px; padding: 6px 10px; }
     .calc-top label { font-size: 10px; }
-    .lc-name  { width: 40%; }
-    .lc-base  { width: 30%; }
-    .lc-eff   { width: 30%; }
-    .lc-prob  { display: none; }
+    .lc-name  { width: 36%; }
+    .lc-base  { width: 28%; }
+    .lc-eff   { display: none; }
+    .lc-cost  { width: 36%; }
   }
 </style>
 </head>
@@ -350,8 +399,14 @@
 
 <div id="secrets" class="panel active">
 
-  <div class="section-label">???</div>
-  <table>
+  <div class="search-wrap">
+    <i class="search-icon">&#128269;</i>
+    <input type="text" id="pet-search" placeholder="Search pets, eggs, abilities..." oninput="filterPets()" />
+  </div>
+  <p id="no-results" class="no-results">No pets match your search.</p>
+
+  <div class="section-label" data-section>???</div>
+  <table data-section-table>
     <thead>
       <tr>
         <th class="col-name">Name</th>
@@ -366,8 +421,8 @@
     </tbody>
   </table>
 
-  <div class="section-label">Secrets</div>
-  <table>
+  <div class="section-label" data-section>Secrets</div>
+  <table data-section-table>
     <thead>
       <tr>
         <th class="col-name">Name</th>
@@ -390,15 +445,15 @@
       <tr><td class="c-sundae">Ice Cream Sundae</td><td>1 / 15,000,000</td><td class="c-tropic">Tropical Egg</td><td class="ability c-sundae">Sweet Treat</td><td class="col-desc">Every time a chest is broken, apply Sugar Rush to all balls for 2 seconds. Stacks!</td></tr>
       <tr><td class="c-kraken">Kraken</td><td>1 / 88,888,888</td><td class="c-tropic">Tropical Egg</td><td class="ability c-kraken">Octo Charge</td><td class="col-desc">Every 8th hit, deal 500% damage.</td></tr>
       <tr><td class="c-opal">Ornate Opal</td><td>1 / 2,000,000</td><td class="c-diamond">Diamond Egg</td><td class="ability c-opal">Shining Crystal</td><td class="col-desc">15% chance to gain +100% gems from a chest.</td></tr>
-      <tr><td class="c-ruby">Royal Ruby</td><td>1 / 2,000,000</td><td class="c-diamond">Diamond Egg</td><td class="ability c-ruby">Gem Harvester</td><td class="col-desc">Every block this ball breaks gives 1 gem in the game's best area.</td></tr>
-      <tr><td class="c-moonseeker">Moonseeker</td><td>1 / 5,000,000</td><td class="c-solar">Solar Egg</td><td class="ability c-moonseeker">Lunar Shift</td><td class="col-desc">This ball gains x1.25 speed.</td></tr>
-      <tr><td class="c-sunseeker">Sunseeker</td><td>1 / 5,000,000</td><td class="c-solar">Solar Egg</td><td class="ability c-sunseeker">Solar Shift</td><td class="col-desc">+10% Crit Chance for every ball.</td></tr>
+      <tr><td class="c-ruby">Royal Ruby</td><td>1 / 5,000,000</td><td class="c-diamond">Diamond Egg</td><td class="ability c-ruby">Gem Harvester</td><td class="col-desc">Every block this ball breaks gives 1 gem in the game's best area.</td></tr>
+      <tr><td class="c-moonseeker">Moonseeker</td><td>1 / 25,000,000</td><td class="c-solar">Solar Egg</td><td class="ability c-moonseeker">Lunar Shift</td><td class="col-desc">This ball gains x1.25 speed.</td></tr>
+      <tr><td class="c-sunseeker">Sunseeker</td><td>1 / 25,000,000</td><td class="c-solar">Solar Egg</td><td class="ability c-sunseeker">Solar Shift</td><td class="col-desc">+10% Crit Chance for every ball.</td></tr>
       <tr><td class="c-gray">???</td><td>1 / 20,000</td><td class="c-gray">C:</td><td class="ability c-muted">&mdash;</td><td class="col-desc">Pet not yet obtained.</td></tr>
     </tbody>
   </table>
 
-  <div class="section-label">Daily Rewards</div>
-  <table>
+  <div class="section-label" data-section>Daily Rewards</div>
+  <table data-section-table>
     <thead>
       <tr>
         <th class="col-name">Name</th>
@@ -414,8 +469,8 @@
     </tbody>
   </table>
 
-  <div class="section-label">Merchants</div>
-  <table>
+  <div class="section-label" data-section>Merchants</div>
+  <table data-section-table>
     <thead>
       <tr>
         <th class="col-name">Name</th>
@@ -430,8 +485,8 @@
     </tbody>
   </table>
 
-  <div class="section-label">Bounties</div>
-  <table>
+  <div class="section-label" data-section>Bounties</div>
+  <table data-section-table>
     <thead>
       <tr>
         <th class="col-name">Name</th>
@@ -448,8 +503,8 @@
     </tbody>
   </table>
 
-  <div class="section-label">Unavailable</div>
-  <table>
+  <div class="section-label" data-section>Unavailable</div>
+  <table data-section-table>
     <thead>
       <tr>
         <th class="col-name">Name</th>
@@ -485,6 +540,7 @@
         <th class="lc-base">Base Rate</th>
         <th class="lc-eff">With Luck</th>
         <th class="lc-prob">Chance / Roll</th>
+        <th class="lc-cost">Expected Cost</th>
       </tr>
     </thead>
     <tbody id="luck-tbody"></tbody>
@@ -508,11 +564,29 @@
     { name: "Ice Cream Sundae", cls: "c-sundae",        egg: "Tropical Egg", base: 15000000  },
     { name: "Kraken",           cls: "c-kraken",        egg: "Tropical Egg", base: 88888888  },
     { name: "Ornate Opal",      cls: "c-opal",          egg: "Diamond Egg",  base: 2000000   },
-    { name: "Royal Ruby",       cls: "c-ruby",          egg: "Diamond Egg",  base: 2000000   },
-    { name: "Moonseeker",       cls: "c-moonseeker",    egg: "Solar Egg",    base: 5000000   },
-    { name: "Sunseeker",        cls: "c-sunseeker",     egg: "Solar Egg",    base: 5000000   },
+    { name: "Royal Ruby",       cls: "c-ruby",          egg: "Diamond Egg",  base: 5000000   },
+    { name: "Moonseeker",       cls: "c-moonseeker",    egg: "Solar Egg",    base: 25000000  },
+    { name: "Sunseeker",        cls: "c-sunseeker",     egg: "Solar Egg",    base: 25000000  },
     { name: "???",              cls: "c-rainbow",       egg: "Solar Egg",    base: 111111111 },
   ];
+
+  const EGG_PRICES = {
+    "Tide Egg":     { cost: 300,   currency: "shells" },
+    "Tropical Egg": { cost: 1500,  currency: "shells" },
+    "Solar Egg":    { cost: 3000,  currency: "shells" },
+    "Ice Egg":      { cost: 1250,  currency: "coins" },
+    "Candy Egg":    { cost: 4000,  currency: "coins" },
+    "Magma Egg":    { cost: 9999,  currency: "coins" },
+    "Mushroom Egg": { cost: 15000, currency: "coins" },
+    "Runic Egg":    { cost: 40000, currency: "coins" },
+    "Diamond Egg":  { cost: 1,     currency: "diamonds" },
+  };
+
+  const CURRENCY_CLASS = {
+    coins:    "val-gold",
+    shells:   "val-shell",
+    diamonds: "val-diamond",
+  };
 
   const EGGS = [...new Set(PETS.map(p => p.egg))];
   let activeEgg = EGGS[0];
@@ -547,14 +621,24 @@
     });
   }
 
+  function fmtCurrency(n) {
+    return Math.round(n).toLocaleString('en-US');
+  }
+
   function recalc() {
     const luck = Math.max(0.001, parseFloat(document.getElementById('luck-input').value) || 1);
     const tbody = document.getElementById('luck-tbody');
     tbody.innerHTML = '';
 
+    const price = EGG_PRICES[activeEgg];
+    const currencyCls = price ? CURRENCY_CLASS[price.currency] : 'val-muted';
+
     PETS.filter(p => p.egg === activeEgg).forEach(pet => {
       const eff  = pet.base / luck;
       const prob = luck / pet.base * 100;
+      const costCell = price
+        ? `<td class="${currencyCls}">${fmtCurrency(eff * price.cost)} ${price.currency}</td>`
+        : `<td class="val-muted">&mdash;</td>`;
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
@@ -562,9 +646,37 @@
         <td class="val-muted">1 / ${pet.base.toLocaleString('en-US')}</td>
         <td class="val-gold">1 / ${fmtNum(eff)}</td>
         <td class="val-lime">${fmtProb(prob)}</td>
+        ${costCell}
       `;
       tbody.appendChild(tr);
     });
+  }
+
+  function filterPets() {
+    const query = document.getElementById('pet-search').value.trim().toLowerCase();
+    const sections = document.querySelectorAll('#secrets [data-section]');
+    let anyVisible = false;
+
+    sections.forEach(label => {
+      const table = label.nextElementSibling;
+      if (!table || !table.hasAttribute('data-section-table')) return;
+
+      const rows = table.querySelectorAll('tbody tr');
+      let sectionHasMatch = false;
+
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        const match = query === '' || text.includes(query);
+        row.classList.toggle('row-hidden', !match);
+        if (match) sectionHasMatch = true;
+      });
+
+      label.classList.toggle('section-hidden', !sectionHasMatch);
+      table.classList.toggle('section-hidden', !sectionHasMatch);
+      if (sectionHasMatch) anyVisible = true;
+    });
+
+    document.getElementById('no-results').style.display = anyVisible ? 'none' : 'block';
   }
 
   function show(id, btn) {
