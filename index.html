@@ -270,15 +270,13 @@
     color: #4a9eff;
   }
 
-  .lc-name  { width: 28%; }
-  .lc-base  { width: 22%; }
-  .lc-eff   { width: 20%; }
-  .lc-prob  { width: 16%; }
-  .lc-exp   { width: 14%; }
+  .lc-name  { width: 34%; }
+  .lc-base  { width: 26%; }
+  .lc-eff   { width: 22%; }
+  .lc-prob  { width: 18%; }
 
   .val-gold   { color: #ffd700; }
   .val-lime   { color: #7fff00; }
-  .val-sky    { color: #4fc3f7; }
   .val-orange { color: #ff8c00; }
   .val-red    { color: #ff6060; }
   .val-muted  { color: var(--muted); }
@@ -311,11 +309,9 @@
     .calc-top .hint { margin-left: 0; width: 100%; order: 3; }
     .egg-tabs { gap: 5px; }
     .egg-tabs button { padding: 6px 10px; font-size: 10px; }
-    .lc-exp { display: none; }
-    .lc-name  { width: 34%; }
-    .lc-base  { width: 26%; }
-    .lc-eff   { width: 22%; }
-    .lc-prob  { width: 18%; }
+    .lc-name  { width: 40%; }
+    .lc-base  { width: 30%; }
+    .lc-eff   { width: 30%; }
   }
 
   @media (max-width: 480px) {
@@ -366,7 +362,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr><td class="c-gray">???</td><td>1 / 20,000</td><td class="c-gray">C:</td><td class="ability c-muted">&mdash;</td><td class="col-desc">Pet not yet obtained.</td></tr>
+      <tr><td class="c-rainbow">???</td><td>1 / 111,111,111</td><td class="c-solar">Solar Egg</td><td class="ability c-muted">&mdash;</td><td class="col-desc">Pet not yet obtained.</td></tr>
     </tbody>
   </table>
 
@@ -382,7 +378,6 @@
       </tr>
     </thead>
     <tbody>
-      <tr><td class="c-rainbow">???</td><td>1 / 111,111,111</td><td class="c-solar">Solar Egg</td><td class="ability c-muted">&mdash;</td><td class="col-desc">Pet not yet obtained.</td></tr>
       <tr><td class="c-cyan">Cryogen</td><td>1 / 10,000,000</td><td class="c-ice">Ice Egg</td><td class="ability c-cyan">Cryogenic</td><td class="col-desc">Freezes block on hit. Normal blocks take 20% extra damage, chests take 10%.</td></tr>
       <tr><td class="c-pink">Sugar Fairy</td><td>1 / 10,000,000</td><td class="c-candy">Candy Egg</td><td class="ability c-pink">Sugar Rush</td><td class="col-desc">20% chance to make blocks sugary for 5s. Balls that hit sugary blocks gain +20% speed for 3s.</td></tr>
       <tr><td class="c-orange">Phoenix</td><td>1 / 10,000,000</td><td class="c-magma">Magma Egg</td><td class="ability c-orange">Rebirth</td><td class="col-desc">Bounces off the ball destruction area once. When it does, gain 25% attack.</td></tr>
@@ -398,6 +393,7 @@
       <tr><td class="c-ruby">Royal Ruby</td><td>1 / 2,000,000</td><td class="c-diamond">Diamond Egg</td><td class="ability c-ruby">Gem Harvester</td><td class="col-desc">Every block this ball breaks gives 1 gem in the game's best area.</td></tr>
       <tr><td class="c-moonseeker">Moonseeker</td><td>1 / 5,000,000</td><td class="c-solar">Solar Egg</td><td class="ability c-moonseeker">Lunar Shift</td><td class="col-desc">This ball gains x1.25 speed.</td></tr>
       <tr><td class="c-sunseeker">Sunseeker</td><td>1 / 5,000,000</td><td class="c-solar">Solar Egg</td><td class="ability c-sunseeker">Solar Shift</td><td class="col-desc">+10% Crit Chance for every ball.</td></tr>
+      <tr><td class="c-gray">???</td><td>1 / 20,000</td><td class="c-gray">C:</td><td class="ability c-muted">&mdash;</td><td class="col-desc">Pet not yet obtained.</td></tr>
     </tbody>
   </table>
 
@@ -489,7 +485,6 @@
         <th class="lc-base">Base Rate</th>
         <th class="lc-eff">With Luck</th>
         <th class="lc-prob">Chance / Roll</th>
-        <th class="lc-exp">Expected Rolls</th>
       </tr>
     </thead>
     <tbody id="luck-tbody"></tbody>
@@ -567,7 +562,6 @@
         <td class="val-muted">1 / ${pet.base.toLocaleString('en-US')}</td>
         <td class="val-gold">1 / ${fmtNum(eff)}</td>
         <td class="val-lime">${fmtProb(prob)}</td>
-        <td class="val-sky">${fmtNum(eff)}</td>
       `;
       tbody.appendChild(tr);
     });
